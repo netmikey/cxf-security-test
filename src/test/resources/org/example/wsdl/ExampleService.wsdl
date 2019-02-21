@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="ExampleService-v1" targetNamespace="http://example.org/v1"
+                  xmlns="http://example.org/v1"
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+                  xmlns:wsp="http://www.w3.org/ns/ws-policy"
+                  xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+                  xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702"
+                  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                  xmlns:wsoma="http://schemas.xmlsoap.org/ws/2004/09/policy/optimizedmimeserialization">
+
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://example.org/v1" xmlns="http://example.org/v1">
+
+            <xs:complexType name="ExampleDataType">
+                <xs:sequence>
+                   	<xs:element name="exampleData" type="xs:string" minOccurs="0" maxOccurs="1" />
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:element name="exampleOperation" type="ExampleDataType">
+            </xs:element>
+
+            <xs:element name="ResponseElement" type="ExampleDataType">
+            </xs:element>
+
+        </xsd:schema>
+    </wsdl:types>
+
+    <wsp:Policy wsu:Id="EmptyPolicy">    
+        <!-- No security with this policy -->
+    </wsp:Policy>
+
+    <wsp:Policy wsu:Id="SecurePolicy">    
+        <wsp:ExactlyOne>
+            <wsp:All>
+                <!-- Responses from the Web service MUST be optimized using MTOM -->
+                <wsoma:OptimizedMimeSerialization />
+                <sp:AsymmetricBinding>
+                    <wsp:Policy>
+                        <!-- Client X.509-Certificate -->
+                        <sp:InitiatorToken>
+                            <wsp:Policy>
+                                <!-- do NOT include the X509 certificate data in request, provide issuer reference only  -->
+                                <sp:X509Token
+                                    sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/Never">
+                                    <wsp:Policy>
+                                        <sp:WssX509V3Token10 />
+                                        <sp:RequireIssuerSerialReference />
+                                    </wsp:Policy>
+                                </sp:X509Token>
+                            </wsp:Policy>
+                        </sp:InitiatorToken>
+                        <!-- Server X.509-Certificate -->
+                        <sp:RecipientToken>
+                            <wsp:Policy>
+                                <!-- do NOT include the X509 certificate data in request, provide issuer reference only  -->
+                                <sp:X509Token
+                                    sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/Never">
+                                    <wsp:Policy>
+                                        <sp:WssX509V3Token10 />
+                                        <sp:RequireIssuerSerialReference />
+                                    </wsp:Policy>
+                                </sp:X509Token>
+                            </wsp:Policy>
+                        </sp:RecipientToken>
+                        <sp:Layout>
+                            <wsp:Policy>
+                                <!-- Use strict Header Layout -->
+                                <sp:Strict />
+                            </wsp:Policy>
+                        </sp:Layout>
+                        <!-- Provide creation date and expiry in request -->
+                        <sp:IncludeTimestamp />
+                        <sp:OnlySignEntireHeadersAndBody />
+                        <sp:AlgorithmSuite>
+                            <wsp:Policy>
+                                <sp:Basic256 />
+                            </wsp:Policy>
+                        </sp:AlgorithmSuite>
+                        <sp:EncryptSignature />
+                    </wsp:Policy>
+                </sp:AsymmetricBinding>
+                <!-- WSS 1.0 options-->
+                <sp:Wss10>
+                    <wsp:Policy>
+                        <sp:MustSupportRefIssuerSerial />
+                    </wsp:Policy>
+                </sp:Wss10>
+                <!-- sign and encrypt message body only -->
+                <sp:SignedParts>
+                    <sp:Body />
+                </sp:SignedParts>
+                <sp:EncryptedParts>
+                    <sp:Body />
+                </sp:EncryptedParts>
+            </wsp:All>
+        </wsp:ExactlyOne>
+    </wsp:Policy>
+
+    <wsdl:message name="RequestMessage">
+        <wsdl:part name="requestMessagePart" element="exampleOperation" />
+    </wsdl:message>
+
+    <wsdl:message name="ResponseMessage">
+        <wsdl:part name="responseMessagePart" element="ResponseElement" />
+    </wsdl:message>
+
+    <wsdl:portType name="ExamplePortType">
+
+        <wsdl:operation name="exampleOperation">
+            <wsdl:input message="RequestMessage" />
+            <wsdl:output message="ResponseMessage" />
+        </wsdl:operation>
+
+    </wsdl:portType>
+
+    <wsdl:binding name="ExampleBinding" type="ExamplePortType">
+    
+        <!-- <wsp:PolicyReference URI="#SecurePolicy"/> -->
+        <!-- <wsp:PolicyReference URI="#EmptyPolicy"/> -->
+
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+
+        <wsdl:operation name="exampleOperation">
+            <soap:operation soapAction="exampleOperation" />
+            <wsdl:input>
+                <wsp:PolicyReference URI="#SecurePolicy"/>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <wsp:PolicyReference URI="#EmptyPolicy"/>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+    </wsdl:binding>
+
+    <wsdl:service name="ExampleService">
+        <wsdl:port name="ExamplePort" binding="ExampleBinding">
+            <soap:address location="http://localhost:8081/ExampleService/v1/ExamplePortType" />
+        </wsdl:port>
+    </wsdl:service>
+
+</wsdl:definitions> 
+ 
+ 

@@ -1,0 +1,7 @@
+# ignores for gradle/eclipse builds #
+build
+.gradle
+bin
+.classpath
+.project
+.settings

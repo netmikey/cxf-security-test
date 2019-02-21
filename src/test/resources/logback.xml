@@ -1,0 +1,22 @@
+<configuration>
+	<appender name="STDOUT"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %-70.70logger{70} : %msg%n</pattern>
+		</encoder>
+	</appender>
+
+    <!-- This will capture logs that can then be checked in our test -->
+	<appender name="TEST" class="org.example.TestAppender" />
+	<logger name="org.apache.cxf.services.ExamplePortType.REQ_OUT">
+		<appender-ref ref="TEST" />
+	</logger>
+	<logger name="org.apache.cxf.services.ExamplePortType.RESP_IN">
+		<appender-ref ref="TEST" />
+	</logger>
+
+	<root level="info">
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</configuration>

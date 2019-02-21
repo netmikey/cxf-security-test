@@ -1,0 +1,28 @@
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+ext {
+    cxfVersion   = '3.3.0'
+    junitVersion = '4.8.2'
+    slf4jVersion = '1.7.25'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile ("org.slf4j:slf4j-api:${slf4jVersion}")
+    compile ("ch.qos.logback:logback-classic:1.2.3")
+    compile ("org.apache.cxf:cxf-core:${cxfVersion}")
+	compile ("org.apache.cxf:cxf-rt-frontend-jaxws:${cxfVersion}")
+    compile ("org.apache.cxf:cxf-rt-ws-security:${cxfVersion}")
+    compile ("org.apache.cxf:cxf-rt-features-logging:${cxfVersion}")
+
+    runtime ("org.apache.cxf:cxf-rt-transports-http-jetty:${cxfVersion}")
+    runtime ("org.apache.cxf:cxf-rt-transports-http:${cxfVersion}")
+    runtime ("org.apache.cxf:cxf-rt-ws-policy:${cxfVersion}")
+
+    testCompile ("junit:junit:${junitVersion}")
+}
