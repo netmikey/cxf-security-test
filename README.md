@@ -37,7 +37,7 @@ Now have a look at the WSDL's binding: it contains a single operation named `exa
 If we run the test with the WSDL as is, it will fail (see below). There are, however, a number of other places within the WSDL where the `<wsp:PolicyReference ... />` can be placed. For testing convenience, we placed a couple of them within the WSDL but commented them out. The following table shows a couple of possible combinations and the effect we expected them to achieve, along with the actual behavior.
 
 | `PolicyReference` placement | Expected behavior | Actual behavior |
-| --- | --- |
+| --- | --- | --- |
 | `SecurePolicy` applied to `wsdl:input`, `EmptyPolicy` applied to `wsdl:output` (as checked into Git by default) | The request message should be secured but the response message should not be. | The client doesn't secure the request message. The Server expects it to be signed/encrypted though and so it rejects the request. |
 | `SecurePolicy` applied to `wsdl:binding`, `EmptyPolicy` applied to `wsdl:output` | The request message should be secured but the response message should not be. | The client secures the request message, the server accepts it but replies with a secured response too. |
 | `EmptyPolicy` applied to `wsdl:binding`, `SecurePolicy` applied to `wsdl:input` | The request message should be secured but the response message should not be. | The client doesn't secure the request message. The Server expects it to be signed/encrypted though and so it rejects the request. |
